@@ -1,113 +1,147 @@
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore,QtGui
+from pyqtgraph.Qt import QtCore,QtGui
 import pyqtgraph as pg
-import random
-import time 
+from random import randrange
+import sys
+import Actions
+import numpy as np
 
-class MainWindow(QtGui.QMainWindow):
-    def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
-        MainWindow.resize(self,1380,800)
-        self.central_widget = QtGui.QStackedWidget()
-        self.setCentralWidget(self.central_widget)
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    _fromUtf8 = lambda s: s
 
-        self.GetBegin = QtGui.QPushButton("Start")
-        self.GetBegin.setGeometry(QtCore.QRect(10, 10, 10, 100))
-        '''
-        self.login_widget = LoginWidget(self)
-        self.login_widget.button.clicked.connect(self.plotter)
-        self.login_widget.setGeometry(QtCore.QRect(10, 10, 550, 300))
 
-        self.login_widget_2 = LoginWidget_2(self)
-        self.login_widget_2.button_2.clicked.connect(self.plotter_2)
-        self.login_widget_2.setGeometry(QtCore.QRect(650, 10, 550, 300))
-
+class Ui_MainWindow(object):
+    def setupUI(self,MainWindow):
+       
+        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.showMaximized()
         
-        self.login_widget_3 = LoginWidget_3(self)
-        self.login_widget_3.button_3.clicked.connect(self.plotter_2)
-        self.login_widget_3.setGeometry(QtCore.QRect(10, 350, 550, 300))
+       # MainWindow.showFullScreen()
+        MainWindow.setStyleSheet("QMainWindow{background-color:black;}")
 
-        self.login_widget_4 = LoginWidget_4(self)
-        self.login_widget_4.button_4.clicked.connect(self.plotter_2)
-        self.login_widget_4.setGeometry(QtCore.QRect(650, 350, 550, 300))
-        '''
-
-    def plotter(self):
-        self.data =[0]
-        self.curve = self.login_widget.plot.getPlotItem().plot()
+        self.centralWidget = QtGui.QWidget(MainWindow)
         
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.updater)
-        self.timer.start(0)
 
-    def plotter_2(self):
+        self.win = pg.GraphicsWindow(title="Basic plotting examples")
+        self.win.setWindowTitle('pyqtgraph example: Plotting')
+
+        self.win2 = pg.GraphicsWindow(title="Basic plotting examples")
+        self.win2.setWindowTitle('pyqtgraph example: Plotting')
+
+        pg.setConfigOptions(antialias=True)
+
+        self.time_stack = []
+        
+        self.p1 = self.win.addPlot(title="Cerrent 1")
+        self.p2 = self.win2.addPlot(title="Cerrent 2")
+
+        self.curve1 = self.p1.plot(self.time_stack,pen=pg.mkPen('b',width=1))
+
+        #------------------------------------- Add Graph 1 ----------------------------------------------
+
+        self.graph_area = QtGui.QWidget(self.centralWidget)
+        self.graph_area.setGeometry(25,90,500,300)
+        self.graph_area.setStyleSheet('QWidget{border:1px solid gray;}')
+
+        self.label = QtGui.QLabel(self.centralWidget)
+        self.label.setGeometry(20,20,70,34)
+        self.label.setStyleSheet('QLabel{font:bold 34px; color:White;}')
+        self.label.setObjectName(_fromUtf8("label"))
+
+        self.layout1 = QtGui.QVBoxLayout()
+        self.layout1.addWidget(self.win)
+        self.layout1.addWidget(self.label)
+        
+        self.graph_area.setLayout(self.layout1)
+        
+
+        self.graph_area.setObjectName(_fromUtf8("graph_area"))
+
+        #------------------------------------- Add Graph 2 ----------------------------------------------
+
+        self.graph_area_2 = QtGui.QWidget(self.centralWidget)
+        self.graph_area_2.setGeometry(700,90,500,300)
+        self.graph_area_2.setStyleSheet('QWidget{border:1px solid gray;}')
+
+        self.label = QtGui.QLabel(self.centralWidget)
+        #self.label.setGeometry(20,20,70,34)
+        self.label.setStyleSheet('QLabel{font:bold 34px; color:White;}')
+        self.label.setObjectName(_fromUtf8("label"))
+
+        self.layout2 = QtGui.QVBoxLayout()
+        self.layout2.addWidget(self.win2)
+        self.layout2.addWidget(self.label)
       
-        self.data_2 =[0]
-        self.curve_2 = self.login_widget_2.plot_2.getPlotItem().plot()
-
-        self.timer_2 = QtCore.QTimer()
-        self.timer_2.timeout.connect(self.updater_2)
-        self.timer_2.start(0)
         
-    def updater(self):
-
-        self.data.append(self.data[-1]+0.2*(0.5-random.random()) )
-        self.curve.setData(self.data)
-
-
-    def updater_2(self):
-
-        self.data_2.append(self.data_2[-1]+0.2*(0.5-random.random()) )
-        self.curve_2.setData(self.data_2)
-
-class LoginWidget(QtGui.QWidget):
-    def __init__(self,parent=None):
-        super(LoginWidget, self).__init__(parent)
-        layout = QtGui.QHBoxLayout()
-        self.button = QtGui.QPushButton('Curent 1')
-        layout.addWidget(self.button)
+        self.graph_area_2.setLayout(self.layout2)
         
-        self.plot = pg.PlotWidget()
+
+        self.graph_area_2.setObjectName(_fromUtf8("graph_area_2"))
+        #------------------------------------- Add Label ----------------------------------------------
+
+   
+
+
+        self.title_text =QtGui.QLabel(self.centralWidget)
+        self.title_text.setGeometry(1050,20,500,34)
+        self.title_text.setStyleSheet('QLabel{font:bold 34px;  color:White;}')
+        self.title_text.setObjectName(_fromUtf8("title_text"))
+
+        self.title_text_add =QtGui.QLabel(self.centralWidget)
+        self.title_text_add.setGeometry(1200,43,500,34)
+        self.title_text_add.setStyleSheet('QLabel{font: 15px; color:White;}')
+        self.title_text_add.setObjectName(_fromUtf8("title_text_add"))
+
+    #------------------------------------- Add Label ----------------------------------------------
+
+
+        MainWindow.setCentralWidget(self.centralWidget)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+
+        self.time = 0
+        self.timer = pg.QtCore.QTimer()
+        self.timer.timeout.connect(self.update)
+        self.timer.start(500)
+
+    def update(self):
+        self.time += 1
+     
+        data = self.time*randrange(-10,10)
+        self.time_stack.append(data)
+        self.curve1.setData(self.time_stack)
+        self.label.setText(QtGui.QApplication.translate("MainWindow", str(data)+"  A.", None, QtGui.QApplication.UnicodeUTF8))
+
+    def retranslateUi(self, MainWindow):
+
+        self.title_text.setText(QtGui.QApplication.translate("MainWindow","SRITUNG-Scadar", None, QtGui.QApplication.UnicodeUTF8))
+        self.title_text_add.setText(QtGui.QApplication.translate("MainWindow","Developed by EE-UBU", None, QtGui.QApplication.UnicodeUTF8))
+
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))       
+        self.label.setText(QtGui.QApplication.translate("MainWindow", "  PLOTS", None, QtGui.QApplication.UnicodeUTF8))
         
-        layout.addWidget(self.plot)
-             
-        self.setLayout(layout)
-
-class LoginWidget_2(QtGui.QWidget):
-    def __init__(self,parent=None):
-        super(LoginWidget_2, self).__init__(parent)
-        layout = QtGui.QHBoxLayout()
-        self.button_2 = QtGui.QPushButton('Curent 2 ')
-        layout.addWidget(self.button_2)
-        self.plot_2 = pg.PlotWidget()       
-        layout.addWidget(self.plot_2)            
-        self.setLayout(layout)
-
-
-class LoginWidget_3(QtGui.QWidget):
-    def __init__(self,parent=None):
-        super(LoginWidget_3, self).__init__(parent)
-        layout = QtGui.QHBoxLayout()
-        self.button_3 = QtGui.QPushButton('Curent 3 ')
-        layout.addWidget(self.button_3)
-        self.plot_3 = pg.PlotWidget()       
-        layout.addWidget(self.plot_3)            
-        self.setLayout(layout)
-
-
-class LoginWidget_4(QtGui.QWidget):
-    def __init__(self,parent=None):
-        super(LoginWidget_4, self).__init__(parent)
-        layout = QtGui.QHBoxLayout()
-        self.button_4 = QtGui.QPushButton('Curent 4 ')
-        layout.addWidget(self.button_4)
-        self.plot_4 = pg.PlotWidget()       
-        layout.addWidget(self.plot_4)            
-        self.setLayout(layout)
+   
+        '''
+        self.btn_test = QtGui.QPushButton()
+        self.btn_test.setGeometry(20,20,200,100)
+        self.btn_test.setStyleSheet('QPushButton{background-color:red;}')
+        self.btn_test.setText('Test Buton')
+        self.btn_test.clicked.connect(Actions.ButtonAction.TestClick)
+        self.btn_test.show()
+        '''
 
 
 
-if __name__ == '__main__':
-    app = QtGui.QApplication([])
-    window = MainWindow()
-    window.show()
-    app.exec_()
+if __name__ == "__main__":
+    import sys
+    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+        app = QtGui.QApplication(sys.argv)
+        MainWindow = QtGui.QMainWindow()
+        ui = Ui_MainWindow()
+        ui.setupUI(MainWindow)
+        MainWindow.show()
+        sys.exit(app.exec_())
